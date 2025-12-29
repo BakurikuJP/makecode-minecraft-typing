@@ -1,6 +1,5 @@
 /**
- * ゲーム状態管理
- * タイピングモンスターバトルの状態を管理
+ * Game State Management
  */
 namespace gameState {
     export let isPlaying: boolean = false;

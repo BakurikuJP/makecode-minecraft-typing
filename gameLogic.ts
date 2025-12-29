@@ -1,53 +1,42 @@
 /**
- * タイピングモンスターバトル
- * メインゲームロジック
+ * Typing Monster Battle - Main Game Logic
  */
 
-//% block="タイピングゲーム"
+//% block="Typing Game"
 //% color="#e74c3c"
 //% icon="\uf11b"
 namespace typingGame {
 
-    /**
-     * ゲームを開始する
-     * @param level 難易度（1:かんたん, 2:ふつう, 3:むずかしい）
-     */
-    //% block="タイピングゲームを開始 難易度 %level"
+    //% block="Start typing game level %level"
     //% level.min=1 level.max=3 level.defl=1
     //% weight=100
     export function startGame(level: number): void {
         if (gameState.isPlaying) {
-            player.say("ゲームはすでに始まっているよ!");
+            player.say("Game already started!");
             return;
         }
 
-        // 初期化
         if (level < 1) level = 1;
         if (level > 3) level = 3;
         gameState.difficulty = level;
         gameState.reset();
         gameState.isPlaying = true;
 
-        // 開始メッセージ
-        let diffName = "かんたん";
-        if (gameState.difficulty === 2) diffName = "ふつう";
-        if (gameState.difficulty === 3) diffName = "むずかしい";
+        let diffName = "Easy";
+        if (gameState.difficulty === 2) diffName = "Normal";
+        if (gameState.difficulty === 3) diffName = "Hard";
         
         player.say("====================");
-        player.say("タイピングモンスターバトル");
+        player.say("Typing Monster Battle");
         player.say("====================");
-        player.say("難易度: " + diffName);
-        player.say("ローマ字を入力してね!");
+        player.say("Level: " + diffName);
+        player.say("Type the romaji!");
 
-        // 最初の問題（少し待ってから）
         loops.pause(2000);
         questions.nextQuestion();
     }
 
-    /**
-     * ゲームを終了する
-     */
-    //% block="タイピングゲームを終了"
+    //% block="End typing game"
     //% weight=90
     export function endGame(): void {
         if (!gameState.isPlaying) return;
@@ -55,49 +44,38 @@ namespace typingGame {
         gameState.isPlaying = false;
         gameState.waitingForAnswer = false;
 
-        // 結果発表
         player.say("====================");
-        player.say("ゲーム終了!");
+        player.say("Game Over!");
         player.say("====================");
-        player.say("倒したモンスター: " + gameState.monstersDefeated + "匹");
-        player.say("正解数: " + gameState.correctCount);
-        player.say("間違い: " + gameState.wrongCount);
-        player.say("最大コンボ: " + gameState.maxCombo);
-        player.say("合計スコア: " + gameState.score + "点");
+        player.say("Monsters: " + gameState.monstersDefeated);
+        player.say("Correct: " + gameState.correctCount);
+        player.say("Wrong: " + gameState.wrongCount);
+        player.say("Max Combo: " + gameState.maxCombo);
+        player.say("Score: " + gameState.score);
 
-        // 評価
         let rating = "";
         if (gameState.score >= 1000) {
-            rating = "スーパータイピングマスター!";
+            rating = "Super Typing Master!";
         } else if (gameState.score >= 500) {
-            rating = "タイピングマスター!";
+            rating = "Typing Master!";
         } else if (gameState.score >= 200) {
-            rating = "なかなかやるね!";
+            rating = "Good job!";
         } else {
-            rating = "もっとがんばろう!";
+            rating = "Keep trying!";
         }
         player.say(rating);
     }
 
-    /**
-     * 答えをチェックする
-     * @param answer プレイヤーの入力
-     */
-    //% block="答えをチェック %answer"
+    //% block="Check answer %answer"
     //% weight=80
     export function checkAnswer(answer: string): void {
-        // ゲーム中でなければ無視
         if (!gameState.isPlaying) return;
-        // 入力待ちでなければ無視
         if (!gameState.waitingForAnswer) return;
-        // 現在の答えがなければ無視
         if (gameState.currentRomaji === "") return;
 
-        // 入力待ちフラグをOFF（重複チェック防止）
         gameState.waitingForAnswer = false;
 
         if (answer === gameState.currentRomaji) {
-            // 正解！
             gameState.combo++;
             gameState.correctCount++;
             gameState.monstersDefeated++;
@@ -106,44 +84,36 @@ namespace typingGame {
                 gameState.maxCombo = gameState.combo;
             }
 
-            // スコア計算
             let baseScore = gameState.difficulty * 10;
             let comboBonus = gameState.combo * 5;
             let totalPoints = baseScore + comboBonus;
             gameState.score += totalPoints;
 
-            // 正解メッセージ
-            player.say(">> 正解! +" + totalPoints + "点");
+            player.say("Correct! +" + totalPoints);
 
             if (gameState.combo >= 3) {
-                player.say(">> " + gameState.combo + "コンボ!");
+                player.say(gameState.combo + " Combo!");
             }
 
-            // 次の問題（少し待ってから）
             loops.pause(1000);
             questions.nextQuestion();
 
         } else {
-            // 不正解
             gameState.combo = 0;
             gameState.wrongCount++;
 
-            player.say("zannen... kotae wa " + gameState.currentRomaji);
+            player.say("Wrong! Answer: " + gameState.currentRomaji);
             
-            // 入力待ちを再度ON
             gameState.waitingForAnswer = true;
         }
     }
 
-    /**
-     * 現在のスコアを表示
-     */
-    //% block="スコアを表示"
+    //% block="Show score"
     //% weight=70
     export function showScore(): void {
-        player.say("--- 現在のスコア ---");
-        player.say("スコア: " + gameState.score + "点");
-        player.say("正解: " + gameState.correctCount);
-        player.say("コンボ: " + gameState.combo);
+        player.say("--- Score ---");
+        player.say("Score: " + gameState.score);
+        player.say("Correct: " + gameState.correctCount);
+        player.say("Combo: " + gameState.combo);
     }
 }

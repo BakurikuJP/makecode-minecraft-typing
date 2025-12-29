@@ -1,11 +1,6 @@
 /**
- * チャットコマンドハンドラー
- * プレイヤーのチャット入力を処理
+ * Chat Command Handlers
  */
-
-// ========================================
-// システムコマンド
-// ========================================
 
 player.onChat("start", function () {
     typingGame.startGame(1);
@@ -32,20 +27,15 @@ player.onChat("score", function () {
 });
 
 player.onChat("help", function () {
-    player.say("--- タイピングモンスターバトル ---");
-    player.say("start : かんたんモードで開始");
-    player.say("start2 : ふつうモード");
-    player.say("start3 : むずかしいモード");
-    player.say("stop : ゲーム終了");
-    player.say("score : スコア確認");
-    player.say("-----------------------------");
+    player.say("--- Typing Monster Battle ---");
+    player.say("start : Easy mode");
+    player.say("start2 : Normal mode");
+    player.say("start3 : Hard mode");
+    player.say("stop : End game");
+    player.say("score : Show score");
 });
 
-// ========================================
-// 答え入力用コマンド
-// かんたんモード（あ〜こ）
-// ========================================
-
+// Easy mode answers
 player.onChat("a", function () { typingGame.checkAnswer("a"); });
 player.onChat("i", function () { typingGame.checkAnswer("i"); });
 player.onChat("u", function () { typingGame.checkAnswer("u"); });
@@ -57,10 +47,7 @@ player.onChat("ku", function () { typingGame.checkAnswer("ku"); });
 player.onChat("ke", function () { typingGame.checkAnswer("ke"); });
 player.onChat("ko", function () { typingGame.checkAnswer("ko"); });
 
-// ========================================
-// ふつうモード（単語）
-// ========================================
-
+// Normal mode answers
 player.onChat("inu", function () { typingGame.checkAnswer("inu"); });
 player.onChat("neko", function () { typingGame.checkAnswer("neko"); });
 player.onChat("saru", function () { typingGame.checkAnswer("saru"); });
@@ -72,10 +59,7 @@ player.onChat("sora", function () { typingGame.checkAnswer("sora"); });
 player.onChat("yama", function () { typingGame.checkAnswer("yama"); });
 player.onChat("umi", function () { typingGame.checkAnswer("umi"); });
 
-// ========================================
-// むずかしいモード（長い単語）
-// ========================================
-
+// Hard mode answers
 player.onChat("zonbi", function () { typingGame.checkAnswer("zonbi"); });
 player.onChat("suraimu", function () { typingGame.checkAnswer("suraimu"); });
 player.onChat("ringo", function () { typingGame.checkAnswer("ringo"); });
