@@ -1,6 +1,6 @@
 {
     "name": "TypingMonsterBattle",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "タイピングでモンスターを倒すゲーム - 小学校低学年向けローマ字練習",
     "dependencies": {
         "core": "*"
@@ -9,7 +9,10 @@
         "main.blocks",
         "main.ts",
         "README.md",
-        "typingGame.ts"
+        "gameState.ts",
+        "questions.ts",
+        "gameLogic.ts",
+        "commands.ts"
     ],
     "testFiles": [
         "test.ts"
