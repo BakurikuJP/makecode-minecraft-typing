@@ -10,116 +10,6 @@
 namespace typingGame {
 
     // ========================================
-    // 問題データ（ローマ字 - 小学校低学年向け）
-    // ========================================
-
-    // かんたん：1〜3文字のローマ字
-    const EASY_WORDS: string[][] = [
-        ["あ", "a"],
-        ["い", "i"],
-        ["う", "u"],
-        ["え", "e"],
-        ["お", "o"],
-        ["か", "ka"],
-        ["き", "ki"],
-        ["く", "ku"],
-        ["け", "ke"],
-        ["こ", "ko"],
-        ["さ", "sa"],
-        ["し", "si"],
-        ["す", "su"],
-        ["せ", "se"],
-        ["そ", "so"],
-        ["た", "ta"],
-        ["て", "te"],
-        ["と", "to"],
-        ["な", "na"],
-        ["に", "ni"],
-        ["ぬ", "nu"],
-        ["ね", "ne"],
-        ["の", "no"],
-        ["は", "ha"],
-        ["ひ", "hi"],
-        ["ふ", "hu"],
-        ["へ", "he"],
-        ["ほ", "ho"],
-        ["ま", "ma"],
-        ["み", "mi"],
-        ["む", "mu"],
-        ["め", "me"],
-        ["も", "mo"],
-        ["や", "ya"],
-        ["ゆ", "yu"],
-        ["よ", "yo"],
-        ["ら", "ra"],
-        ["り", "ri"],
-        ["る", "ru"],
-        ["れ", "re"],
-        ["ろ", "ro"],
-        ["わ", "wa"],
-        ["を", "wo"],
-        ["ん", "n"]
-    ];
-
-    // ふつう：簡単な単語
-    const NORMAL_WORDS: string[][] = [
-        ["いぬ", "inu"],
-        ["ねこ", "neko"],
-        ["さる", "saru"],
-        ["とり", "tori"],
-        ["うま", "uma"],
-        ["くま", "kuma"],
-        ["りす", "risu"],
-        ["さかな", "sakana"],
-        ["あり", "ari"],
-        ["はち", "hati"],
-        ["かに", "kani"],
-        ["えび", "ebi"],
-        ["たこ", "tako"],
-        ["いか", "ika"],
-        ["りんご", "ringo"],
-        ["みかん", "mikan"],
-        ["ばなな", "banana"],
-        ["もも", "momo"],
-        ["ぶどう", "budou"],
-        ["すいか", "suika"],
-        ["そら", "sora"],
-        ["うみ", "umi"],
-        ["やま", "yama"],
-        ["かわ", "kawa"],
-        ["くも", "kumo"],
-        ["ほし", "hosi"],
-        ["つき", "tuki"],
-        ["ひ", "hi"],
-        ["あめ", "ame"],
-        ["ゆき", "yuki"]
-    ];
-
-    // むずかしい：少し長い単語
-    const HARD_WORDS: string[][] = [
-        ["ぞんび", "zonbi"],
-        ["すけるとん", "sukeruton"],
-        ["くりーぱー", "kuri-pa-"],
-        ["えんだーまん", "enda-man"],
-        ["ぶれいず", "bureizu"],
-        ["すらいむ", "suraimu"],
-        ["まいんくらふと", "mainkurahuto"],
-        ["だいやもんど", "daiyamondo"],
-        ["てれぽーと", "terepoo-to"],
-        ["えんちゃんと", "entyanto"],
-        ["とうもろこし", "toumorokosi"],
-        ["ひまわり", "himawari"],
-        ["たんぽぽ", "tanpopo"],
-        ["ちょうちょ", "tyoutyo"],
-        ["かぶとむし", "kabutomusi"],
-        ["くわがたむし", "kuwagatamusi"],
-        ["せみ", "semi"],
-        ["とんぼ", "tonbo"],
-        ["かまきり", "kamakiri"],
-        ["ばった", "batta"]
-    ];
-
-    // ========================================
     // ゲーム状態
     // ========================================
 
@@ -131,24 +21,10 @@ namespace typingGame {
     let wrongCount: number = 0;
     let currentHiragana: string = "";
     let currentRomaji: string = "";
-    let difficulty: number = 1; // 1:かんたん, 2:ふつう, 3:むずかしい
+    let difficulty: number = 1;
     let timeRemaining: number = 60;
-    let gameTimerId: number = 0;
     let monstersDefeated: number = 0;
-
-    // モンスター名リスト
-    const MONSTER_NAMES: string[] = [
-        "スライム",
-        "ゾンビ",
-        "スケルトン",
-        "クリーパー",
-        "クモ",
-        "エンダーマン",
-        "ブレイズ",
-        "ガスト",
-        "ウィッチ",
-        "ファントム"
-    ];
+    let questionIndex: number = 0;
 
     // ========================================
     // ゲーム開始・終了
@@ -168,7 +44,9 @@ namespace typingGame {
         }
 
         // 初期化
-        difficulty = Math.clamp(1, 3, level);
+        if (level < 1) level = 1;
+        if (level > 3) level = 3;
+        difficulty = level;
         score = 0;
         combo = 0;
         maxCombo = 0;
@@ -179,17 +57,16 @@ namespace typingGame {
         isPlaying = true;
 
         // 開始メッセージ
-        const diffName = difficulty === 1 ? "かんたん" : difficulty === 2 ? "ふつう" : "むずかしい";
-        player.say("§6━━━━━━━━━━━━━━━━━━━━");
-        player.say("§e✨ タイピングモンスターバトル ✨");
-        player.say("§6━━━━━━━━━━━━━━━━━━━━");
-        player.say("§a難易度: §f" + diffName);
-        player.say("§a制限時間: §f60秒");
-        player.say("§7ローマ字を入力してモンスターを倒そう！");
-        player.say("");
-
-        // タイマー開始
-        startTimer();
+        let diffName = "かんたん";
+        if (difficulty === 2) diffName = "ふつう";
+        if (difficulty === 3) diffName = "むずかしい";
+        
+        player.say("━━━━━━━━━━━━━━━━━━━━");
+        player.say("タイピングモンスターバトル");
+        player.say("━━━━━━━━━━━━━━━━━━━━");
+        player.say("難易度: " + diffName);
+        player.say("制限時間: 60秒");
+        player.say("ローマ字を入力してモンスターを倒そう！");
 
         // 最初の問題
         loops.pause(1000);
@@ -207,94 +84,110 @@ namespace typingGame {
         isPlaying = false;
 
         // 結果発表
-        player.say("");
-        player.say("§6━━━━━━━━━━━━━━━━━━━━");
-        player.say("§e🎉 ゲーム終了！ 🎉");
-        player.say("§6━━━━━━━━━━━━━━━━━━━━");
-        player.say("§a倒したモンスター: §f" + monstersDefeated + "匹");
-        player.say("§a正解数: §f" + correctCount);
-        player.say("§c間違い: §f" + wrongCount);
-        player.say("§d最大コンボ: §f" + maxCombo);
-        player.say("§e★ 合計スコア: §f" + score + "点");
-        player.say("§6━━━━━━━━━━━━━━━━━━━━");
+        player.say("━━━━━━━━━━━━━━━━━━━━");
+        player.say("ゲーム終了！");
+        player.say("━━━━━━━━━━━━━━━━━━━━");
+        player.say("倒したモンスター: " + monstersDefeated + "匹");
+        player.say("正解数: " + correctCount);
+        player.say("間違い: " + wrongCount);
+        player.say("最大コンボ: " + maxCombo);
+        player.say("合計スコア: " + score + "点");
+        player.say("━━━━━━━━━━━━━━━━━━━━");
 
         // 評価
         let rating = "";
         if (score >= 1000) {
-            rating = "§6✨ スーパータイピングマスター！ ✨";
+            rating = "スーパータイピングマスター！";
         } else if (score >= 500) {
-            rating = "§e⭐ タイピングマスター！ ⭐";
+            rating = "タイピングマスター！";
         } else if (score >= 200) {
-            rating = "§a🌟 なかなかやるね！ 🌟";
+            rating = "なかなかやるね！";
         } else {
-            rating = "§b💪 もっとがんばろう！ 💪";
+            rating = "もっとがんばろう！";
         }
         player.say(rating);
-    }
-
-    // ========================================
-    // タイマー
-    // ========================================
-
-    function startTimer(): void {
-        loops.forever(function () {
-            if (!isPlaying) return;
-
-            loops.pause(1000);
-            timeRemaining--;
-
-            // 残り時間通知
-            if (timeRemaining === 30) {
-                player.say("§e⏰ 残り30秒！");
-            } else if (timeRemaining === 10) {
-                player.say("§c⏰ 残り10秒！がんばれ！");
-            } else if (timeRemaining === 5) {
-                player.say("§c⏰ 5...");
-            } else if (timeRemaining === 4) {
-                player.say("§c4...");
-            } else if (timeRemaining === 3) {
-                player.say("§c3...");
-            } else if (timeRemaining === 2) {
-                player.say("§c2...");
-            } else if (timeRemaining === 1) {
-                player.say("§c1...");
-            }
-
-            if (timeRemaining <= 0) {
-                endGame();
-            }
-        });
     }
 
     // ========================================
     // 問題出題
     // ========================================
 
-    function getWordList(): string[][] {
-        if (difficulty === 1) return EASY_WORDS;
-        if (difficulty === 2) return NORMAL_WORDS;
-        return HARD_WORDS;
-    }
-
     function nextQuestion(): void {
         if (!isPlaying) return;
 
-        const wordList = getWordList();
-        const index = Math.floor(Math.random() * wordList.length);
-        const word = wordList[index];
-
-        currentHiragana = word[0];
-        currentRomaji = word[1];
+        // 難易度に応じた問題を選択
+        questionIndex = Math.randomRange(0, 9);
+        
+        if (difficulty === 1) {
+            // かんたん: ひらがな1文字
+            setEasyQuestion(questionIndex);
+        } else if (difficulty === 2) {
+            // ふつう: 簡単な単語
+            setNormalQuestion(questionIndex);
+        } else {
+            // むずかしい: 長い単語
+            setHardQuestion(questionIndex);
+        }
 
         // ランダムなモンスターを選択
-        const monsterIndex = Math.floor(Math.random() * MONSTER_NAMES.length);
-        const monsterName = MONSTER_NAMES[monsterIndex];
+        let monsterName = getMonsterName(Math.randomRange(0, 9));
 
         // 問題表示
         player.say("");
-        player.say("§c🐉 " + monsterName + "が現れた！");
-        player.say("§f「§e" + currentHiragana + "§f」をローマ字で入力しよう！");
-        player.say("§7(ヒント: " + currentRomaji.charAt(0) + "...)");
+        player.say(monsterName + "が現れた！");
+        player.say("「" + currentHiragana + "」をローマ字で入力しよう！");
+    }
+
+    function setEasyQuestion(index: number): void {
+        if (index === 0) { currentHiragana = "あ"; currentRomaji = "a"; }
+        else if (index === 1) { currentHiragana = "い"; currentRomaji = "i"; }
+        else if (index === 2) { currentHiragana = "う"; currentRomaji = "u"; }
+        else if (index === 3) { currentHiragana = "え"; currentRomaji = "e"; }
+        else if (index === 4) { currentHiragana = "お"; currentRomaji = "o"; }
+        else if (index === 5) { currentHiragana = "か"; currentRomaji = "ka"; }
+        else if (index === 6) { currentHiragana = "き"; currentRomaji = "ki"; }
+        else if (index === 7) { currentHiragana = "く"; currentRomaji = "ku"; }
+        else if (index === 8) { currentHiragana = "け"; currentRomaji = "ke"; }
+        else { currentHiragana = "こ"; currentRomaji = "ko"; }
+    }
+
+    function setNormalQuestion(index: number): void {
+        if (index === 0) { currentHiragana = "いぬ"; currentRomaji = "inu"; }
+        else if (index === 1) { currentHiragana = "ねこ"; currentRomaji = "neko"; }
+        else if (index === 2) { currentHiragana = "さる"; currentRomaji = "saru"; }
+        else if (index === 3) { currentHiragana = "とり"; currentRomaji = "tori"; }
+        else if (index === 4) { currentHiragana = "うま"; currentRomaji = "uma"; }
+        else if (index === 5) { currentHiragana = "くま"; currentRomaji = "kuma"; }
+        else if (index === 6) { currentHiragana = "りす"; currentRomaji = "risu"; }
+        else if (index === 7) { currentHiragana = "そら"; currentRomaji = "sora"; }
+        else if (index === 8) { currentHiragana = "やま"; currentRomaji = "yama"; }
+        else { currentHiragana = "うみ"; currentRomaji = "umi"; }
+    }
+
+    function setHardQuestion(index: number): void {
+        if (index === 0) { currentHiragana = "ぞんび"; currentRomaji = "zonbi"; }
+        else if (index === 1) { currentHiragana = "すらいむ"; currentRomaji = "suraimu"; }
+        else if (index === 2) { currentHiragana = "りんご"; currentRomaji = "ringo"; }
+        else if (index === 3) { currentHiragana = "みかん"; currentRomaji = "mikan"; }
+        else if (index === 4) { currentHiragana = "ばなな"; currentRomaji = "banana"; }
+        else if (index === 5) { currentHiragana = "さかな"; currentRomaji = "sakana"; }
+        else if (index === 6) { currentHiragana = "ひまわり"; currentRomaji = "himawari"; }
+        else if (index === 7) { currentHiragana = "たんぽぽ"; currentRomaji = "tanpopo"; }
+        else if (index === 8) { currentHiragana = "とんぼ"; currentRomaji = "tonbo"; }
+        else { currentHiragana = "せみ"; currentRomaji = "semi"; }
+    }
+
+    function getMonsterName(index: number): string {
+        if (index === 0) return "スライム";
+        if (index === 1) return "ゾンビ";
+        if (index === 2) return "スケルトン";
+        if (index === 3) return "クリーパー";
+        if (index === 4) return "クモ";
+        if (index === 5) return "エンダーマン";
+        if (index === 6) return "ブレイズ";
+        if (index === 7) return "ガスト";
+        if (index === 8) return "ウィッチ";
+        return "ファントム";
     }
 
     // ========================================
@@ -309,12 +202,9 @@ namespace typingGame {
     //% weight=80
     export function checkAnswer(answer: string): void {
         if (!isPlaying) return;
+        if (currentRomaji === "") return;
 
-        // 大文字小文字を無視して比較
-        const normalizedAnswer = answer.toLowerCase().trim();
-        const normalizedCorrect = currentRomaji.toLowerCase();
-
-        if (normalizedAnswer === normalizedCorrect) {
+        if (answer === currentRomaji) {
             // 正解！
             combo++;
             correctCount++;
@@ -331,15 +221,15 @@ namespace typingGame {
             score += totalPoints;
 
             // 正解メッセージ
-            player.say("§a✔ 正解！ +" + totalPoints + "点");
+            player.say("正解！ +" + totalPoints + "点");
 
             if (combo >= 3) {
-                player.say("§d🔥 " + combo + "コンボ！");
+                player.say(combo + "コンボ！");
             }
             if (combo === 5) {
-                player.say("§e⭐ すごい！5コンボ達成！");
+                player.say("すごい！5コンボ達成！");
             } else if (combo === 10) {
-                player.say("§6✨ 最高！10コンボ達成！ ✨");
+                player.say("最高！10コンボ達成！");
             }
 
             // 次の問題
@@ -351,8 +241,8 @@ namespace typingGame {
             combo = 0;
             wrongCount++;
 
-            player.say("§c✖ ざんねん... 正解は「§f" + currentRomaji + "§c」");
-            player.say("§7もう一度チャレンジ！");
+            player.say("ざんねん... 正解は「" + currentRomaji + "」");
+            player.say("もう一度チャレンジ！");
         }
     }
 
@@ -366,11 +256,10 @@ namespace typingGame {
     //% block="スコアを表示"
     //% weight=70
     export function showScore(): void {
-        player.say("§6━━━ 現在のスコア ━━━");
-        player.say("§eスコア: §f" + score + "点");
-        player.say("§a正解: §f" + correctCount);
-        player.say("§dコンボ: §f" + combo);
-        player.say("§c残り時間: §f" + timeRemaining + "秒");
+        player.say("━━━ 現在のスコア ━━━");
+        player.say("スコア: " + score + "点");
+        player.say("正解: " + correctCount);
+        player.say("コンボ: " + combo);
     }
 }
 
@@ -407,21 +296,12 @@ player.onChat("score", function () {
 
 // ヘルプ
 player.onChat("help", function () {
-    player.say("§6━━━ タイピングモンスターバトル ━━━");
-    player.say("§a/start §7: かんたんモードで開始");
-    player.say("§a/start1 §7: かんたんモード");
-    player.say("§a/start2 §7: ふつうモード");
-    player.say("§a/start3 §7: むずかしいモード");
-    player.say("§a/stop §7: ゲーム終了");
-    player.say("§a/score §7: スコア確認");
-    player.say("§6━━━━━━━━━━━━━━━━━━━━");
-});
-
-// 入力判定用イベント
-player.onChat("*", function (msg: string) {
-    // ゲームコマンド以外の入力を判定
-    const commands = ["start", "start1", "start2", "start3", "stop", "score", "help"];
-    if (commands.indexOf(msg) === -1) {
-        typingGame.checkAnswer(msg);
-    }
+    player.say("━━━ タイピングモンスターバトル ━━━");
+    player.say("start : かんたんモードで開始");
+    player.say("start1 : かんたんモード");
+    player.say("start2 : ふつうモード");
+    player.say("start3 : むずかしいモード");
+    player.say("stop : ゲーム終了");
+    player.say("score : スコア確認");
+    player.say("━━━━━━━━━━━━━━━━━━━━");
 });
