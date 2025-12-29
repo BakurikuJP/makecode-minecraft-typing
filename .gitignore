@@ -1,0 +1,16 @@
+# MakeCode/PXT artifacts
+built/
+yotta_modules/
+yotta_targets/
+pxt_modules/
+node_modules/
+
+# Editor config
+.vscode/
+*.tgz
+*.log
+_history
+
+# OS generated files
+.DS_Store
+Thumbs.db
