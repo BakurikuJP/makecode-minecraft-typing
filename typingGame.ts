@@ -22,7 +22,6 @@ namespace typingGame {
     let currentHiragana: string = "";
     let currentRomaji: string = "";
     let difficulty: number = 1;
-    let timeRemaining: number = 60;
     let monstersDefeated: number = 0;
     let questionIndex: number = 0;
 
@@ -53,7 +52,6 @@ namespace typingGame {
         correctCount = 0;
         wrongCount = 0;
         monstersDefeated = 0;
-        timeRemaining = 60;
         isPlaying = true;
 
         // 開始メッセージ
@@ -65,8 +63,7 @@ namespace typingGame {
         player.say("タイピングモンスターバトル");
         player.say("━━━━━━━━━━━━━━━━━━━━");
         player.say("難易度: " + diffName);
-        player.say("制限時間: 60秒");
-        player.say("ローマ字を入力してモンスターを倒そう！");
+        player.say("そのままローマ字を入力してね！");
 
         // 最初の問題
         loops.pause(1000);
@@ -119,13 +116,10 @@ namespace typingGame {
         questionIndex = Math.randomRange(0, 9);
         
         if (difficulty === 1) {
-            // かんたん: ひらがな1文字
             setEasyQuestion(questionIndex);
         } else if (difficulty === 2) {
-            // ふつう: 簡単な単語
             setNormalQuestion(questionIndex);
         } else {
-            // むずかしい: 長い単語
             setHardQuestion(questionIndex);
         }
 
@@ -135,7 +129,7 @@ namespace typingGame {
         // 問題表示
         player.say("");
         player.say(monsterName + "が現れた！");
-        player.say("「" + currentHiragana + "」をローマ字で入力しよう！");
+        player.say("「" + currentHiragana + "」を入力！");
     }
 
     function setEasyQuestion(index: number): void {
@@ -242,7 +236,6 @@ namespace typingGame {
             wrongCount++;
 
             player.say("ざんねん... 正解は「" + currentRomaji + "」");
-            player.say("もう一度チャレンジ！");
         }
     }
 
@@ -298,10 +291,49 @@ player.onChat("score", function () {
 player.onChat("help", function () {
     player.say("━━━ タイピングモンスターバトル ━━━");
     player.say("start : かんたんモードで開始");
-    player.say("start1 : かんたんモード");
     player.say("start2 : ふつうモード");
     player.say("start3 : むずかしいモード");
     player.say("stop : ゲーム終了");
     player.say("score : スコア確認");
     player.say("━━━━━━━━━━━━━━━━━━━━");
 });
+
+// ========================================
+// 全ての答えを直接入力できるように登録
+// ========================================
+
+// かんたんモード（あ〜こ）
+player.onChat("a", function () { typingGame.checkAnswer("a"); });
+player.onChat("i", function () { typingGame.checkAnswer("i"); });
+player.onChat("u", function () { typingGame.checkAnswer("u"); });
+player.onChat("e", function () { typingGame.checkAnswer("e"); });
+player.onChat("o", function () { typingGame.checkAnswer("o"); });
+player.onChat("ka", function () { typingGame.checkAnswer("ka"); });
+player.onChat("ki", function () { typingGame.checkAnswer("ki"); });
+player.onChat("ku", function () { typingGame.checkAnswer("ku"); });
+player.onChat("ke", function () { typingGame.checkAnswer("ke"); });
+player.onChat("ko", function () { typingGame.checkAnswer("ko"); });
+
+// ふつうモード（単語）
+player.onChat("inu", function () { typingGame.checkAnswer("inu"); });
+player.onChat("neko", function () { typingGame.checkAnswer("neko"); });
+player.onChat("saru", function () { typingGame.checkAnswer("saru"); });
+player.onChat("tori", function () { typingGame.checkAnswer("tori"); });
+player.onChat("uma", function () { typingGame.checkAnswer("uma"); });
+player.onChat("kuma", function () { typingGame.checkAnswer("kuma"); });
+player.onChat("risu", function () { typingGame.checkAnswer("risu"); });
+player.onChat("sora", function () { typingGame.checkAnswer("sora"); });
+player.onChat("yama", function () { typingGame.checkAnswer("yama"); });
+player.onChat("umi", function () { typingGame.checkAnswer("umi"); });
+
+// むずかしいモード（長い単語）
+player.onChat("zonbi", function () { typingGame.checkAnswer("zonbi"); });
+player.onChat("suraimu", function () { typingGame.checkAnswer("suraimu"); });
+player.onChat("ringo", function () { typingGame.checkAnswer("ringo"); });
+player.onChat("mikan", function () { typingGame.checkAnswer("mikan"); });
+player.onChat("banana", function () { typingGame.checkAnswer("banana"); });
+player.onChat("sakana", function () { typingGame.checkAnswer("sakana"); });
+player.onChat("himawari", function () { typingGame.checkAnswer("himawari"); });
+player.onChat("tanpopo", function () { typingGame.checkAnswer("tanpopo"); });
+player.onChat("tonbo", function () { typingGame.checkAnswer("tonbo"); });
+player.onChat("semi", function () { typingGame.checkAnswer("semi"); });
