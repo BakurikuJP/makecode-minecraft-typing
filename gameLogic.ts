@@ -128,7 +128,7 @@ namespace typingGame {
             gameState.combo = 0;
             gameState.wrongCount++;
 
-            player.say(">> ざんねん... 正解は [" + gameState.currentRomaji + "]");
+            player.say("zannen... kotae wa " + gameState.currentRomaji);
             
             // 入力待ちを再度ON
             gameState.waitingForAnswer = true;

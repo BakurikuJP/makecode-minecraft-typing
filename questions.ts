@@ -80,8 +80,8 @@ namespace questions {
 
         // 問題表示
         player.say("");
-        player.say(monsterName + " が現れた!");
-        player.say("[" + gameState.currentHiragana + "] を入力!");
+        player.say(monsterName + " ga arawareta!");
+        player.say(gameState.currentHiragana + " wo nyuryoku!");
 
         // 入力待ちフラグをON
         gameState.waitingForAnswer = true;
